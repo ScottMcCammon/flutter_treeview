@@ -8,3 +8,12 @@ enum InsertMode {
   append,
   insert,
 }
+
+enum ArrowStyle {
+  arrow,
+  longArrow,
+  chevron,
+  box,
+  filledCircle,
+  circle,
+}

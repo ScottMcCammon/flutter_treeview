@@ -9,7 +9,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TreeView Example',
-      theme: ThemeData.dark(),
       home: MyHomePage(title: 'TreeView Example'),
     );
   }
@@ -33,24 +32,37 @@ class _MyHomePageState extends State<MyHomePage> {
     _nodes = [
       Node(label: 'documents', key: 'docs', children: [
         Node(label: 'personal', key: 'd3', children: [
-          Node(label: 'Resume.docx', key: 'pd1'),
-          Node(label: 'Cover Letter.docx', key: 'pd2'),
+          Node(
+              label: 'Resume.docx',
+              key: 'pd1',
+              icon: NodeIcon.fromIconData(Icons.insert_drive_file)),
+          Node(
+              label: 'Cover Letter.docx',
+              key: 'pd2',
+              icon: NodeIcon.fromIconData(Icons.insert_drive_file)),
         ]),
-        Node(label: 'Inspection.docx', key: 'd1'),
-        Node(label: 'Invoice.docx', key: 'd2'),
+        Node(
+          label: 'Inspection.docx',
+          key: 'd1',
+//          icon: NodeIcon.fromIconData(Icons.insert_drive_file),
+        ),
+        Node(
+            label: 'Invoice.docx',
+            key: 'd2',
+            icon: NodeIcon.fromIconData(Icons.insert_drive_file)),
       ]),
       Node(
-        label: 'MeetingReport.xls',
-        key: 'mrxls',
-      ),
+          label: 'MeetingReport.xls',
+          key: 'mrxls',
+          icon: NodeIcon.fromIconData(Icons.insert_drive_file)),
       Node(
-        label: 'MeetingReport.pdf',
-        key: 'mrpdf',
-      ),
+          label: 'MeetingReport.pdf',
+          key: 'mrpdf',
+          icon: NodeIcon.fromIconData(Icons.insert_drive_file)),
       Node(
-        label: 'Demo.zip',
-        key: 'demo',
-      ),
+          label: 'Demo.zip',
+          key: 'demo',
+          icon: NodeIcon.fromIconData(Icons.archive)),
     ];
     _treeViewController = TreeViewController(
       children: _nodes,
@@ -66,24 +78,48 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         elevation: 0,
       ),
-      body: TreeView(
-        controller: _treeViewController,
-        allowParentSelect: true,
-        onNodeCollapse: (key) => _expandNode(key, false),
-        onNodeExpand: (key) => _expandNode(key, true),
-        onNodeSelect: (key) {
-          print('Selected: $key');
-          setState(() {
-            _treeViewController =
-                _treeViewController.copyWith(selectedKey: key);
-          });
-        },
+      body: Container(
+        padding: EdgeInsets.only(left: 5),
+        child: TreeView(
+          controller: _treeViewController,
+          allowParentSelect: true,
+          onNodeCollapse: (key) => _expandNode(key, false),
+          onNodeExpand: (key) => _expandNode(key, true),
+          onNodeSelect: (key) {
+            debugPrint('Selected: $key');
+            setState(() {
+              _treeViewController =
+                  _treeViewController.copyWith(selectedKey: key);
+            });
+          },
+          theme: TreeViewTheme(
+            arrowStyle: ArrowStyle.box,
+            labelStyle: TextStyle(
+              fontFamily: 'Times',
+              fontSize: 16,
+              letterSpacing: 0.3,
+            ),
+            colorScheme: Theme.of(context).brightness == Brightness.light
+                ? ColorScheme.light(
+                    primary: Colors.blue.shade50,
+                    onPrimary: Colors.grey.shade900,
+                    background: Colors.transparent,
+                    onBackground: Colors.black,
+                  )
+                : ColorScheme.dark(
+                    primary: Colors.black26,
+                    onPrimary: Colors.white,
+                    background: Colors.transparent,
+                    onBackground: Colors.white70,
+                  ),
+          ),
+        ),
       ),
     );
   }
 
   _expandNode(String key, bool expanded) {
-    print('${expanded ? "Expanded" : "Collapsed"}: $key');
+    debugPrint('${expanded ? "Expanded" : "Collapsed"}: $key');
     Node node = _treeViewController.getNode(key);
     if (node != null) {
       List<Node> updated = _treeViewController.updateNode(

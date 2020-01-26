@@ -70,6 +70,8 @@ class Node {
 
   bool get isParent => children.isNotEmpty;
 
+  bool get hasIcon => icon != null && icon.icon != null;
+
   Map<String, dynamic> get asMap => {
         "key": key,
         "label": label,
