@@ -1,6 +1,6 @@
-enum TreeViewStyle {
-  classic,
-  iOS,
+enum ExpanderPosition {
+  start,
+  end,
 }
 
 enum InsertMode {
@@ -9,7 +9,7 @@ enum InsertMode {
   insert,
 }
 
-enum ArrowStyle {
+enum ExpanderStyle {
   arrow,
   longArrow,
   chevron,

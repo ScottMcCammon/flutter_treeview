@@ -7,23 +7,23 @@ class TreeViewTheme {
     this.iconTheme: const IconThemeData(),
     this.labelStyle: const TextStyle(),
     this.levelPadding: 20,
-    this.style: TreeViewStyle.classic,
-    this.arrowStyle: ArrowStyle.arrow,
+    this.position: ExpanderPosition.start,
+    this.expanderStyle: ExpanderStyle.arrow,
   });
 
   final ColorScheme colorScheme;
   final double levelPadding;
   final IconThemeData iconTheme;
   final TextStyle labelStyle;
-  final TreeViewStyle style;
-  final ArrowStyle arrowStyle;
+  final ExpanderPosition position;
+  final ExpanderStyle expanderStyle;
 
   TreeViewTheme copyWith({
     ColorScheme colorScheme,
     IconThemeData iconTheme,
     TextStyle labelStyle,
-    TreeViewStyle style,
-    ArrowStyle arrowStyle,
+    ExpanderPosition position,
+    ExpanderStyle arrowStyle,
     double levelPadding,
   }) {
     return TreeViewTheme(
@@ -31,8 +31,8 @@ class TreeViewTheme {
       levelPadding: levelPadding ?? this.levelPadding,
       iconTheme: iconTheme ?? this.iconTheme,
       labelStyle: labelStyle ?? this.labelStyle,
-      style: style ?? this.style,
-      arrowStyle: arrowStyle ?? this.arrowStyle,
+      position: position ?? this.position,
+      expanderStyle: arrowStyle ?? this.expanderStyle,
     );
   }
 
@@ -43,8 +43,8 @@ class TreeViewTheme {
       levelPadding,
       iconTheme,
       labelStyle,
-      style,
-      arrowStyle,
+      position,
+      expanderStyle,
     );
   }
 
@@ -56,8 +56,8 @@ class TreeViewTheme {
         other.colorScheme == colorScheme &&
         other.levelPadding == levelPadding &&
         other.iconTheme == iconTheme &&
-        other.style == style &&
-        other.arrowStyle == arrowStyle &&
+        other.position == position &&
+        other.expanderStyle == expanderStyle &&
         other.labelStyle == labelStyle;
   }
 }

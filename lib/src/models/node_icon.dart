@@ -8,8 +8,11 @@ class NodeIcon {
   final String fontFamily;
   final String color;
 
-  NodeIcon({this.codePoint, this.fontFamily, this.color})
-      : assert(codePoint != null);
+  NodeIcon({
+    this.codePoint,
+    this.fontFamily: 'MaterialIcons',
+    this.color,
+  }) : assert(codePoint != null);
 
   factory NodeIcon.fromString(String icon) {
     IconData _icon = Utilities.getIcon(icon);

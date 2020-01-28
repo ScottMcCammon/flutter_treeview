@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_treeview/src/enums.dart';
 import 'package:flutter_treeview/src/tree_view_controller.dart';
 import 'package:flutter_treeview/src/tree_view_theme.dart';
 
-import 'expansion_node.dart';
 import 'models/node.dart';
 import 'tree_node.dart';
 
@@ -13,6 +11,7 @@ class TreeView extends InheritedWidget {
   final Function(String, bool) onExpansionChanged;
   final TreeViewTheme theme;
   final bool allowParentSelect;
+  final bool supportParentDoubleTap;
 
   TreeView({
     Key key,
@@ -20,12 +19,13 @@ class TreeView extends InheritedWidget {
     this.onNodeSelect,
     this.onExpansionChanged,
     this.allowParentSelect: false,
+    this.supportParentDoubleTap: false,
     TreeViewTheme theme,
   })  : this.theme = theme ?? const TreeViewTheme(),
         super(
-            key: key,
-            child: _TreeViewData(controller,
-                theme: theme ?? const TreeViewTheme()));
+          key: key,
+          child: _TreeViewData(controller),
+        );
 
   static TreeView of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType(aspect: TreeView);
@@ -36,77 +36,27 @@ class TreeView extends InheritedWidget {
         oldWidget.onNodeSelect != this.onNodeSelect ||
         oldWidget.onExpansionChanged != this.onExpansionChanged ||
         oldWidget.theme != this.theme ||
+        oldWidget.supportParentDoubleTap != this.supportParentDoubleTap ||
         oldWidget.allowParentSelect != this.allowParentSelect;
   }
 }
 
 class _TreeViewData extends StatelessWidget {
   final TreeViewController _controller;
-  final TreeViewTheme _theme;
 
-  const _TreeViewData(this._controller, {TreeViewTheme theme})
-      : this._theme = theme;
+  const _TreeViewData(this._controller);
 
   @override
   Widget build(BuildContext context) {
-    switch (_theme.style) {
-      case TreeViewStyle.iOS:
-        return buildIOSView();
-      default:
-        return buildClassicView();
-    }
-  }
-
-  ListView buildClassicView() {
-    return ListView(
-      children: _controller.children.map((Node node) {
-        return TreeNode(node: node);
-      }).toList(),
-    );
-  }
-
-  Widget buildIOSView() {
     return Theme(
       data: ThemeData(
-        dividerColor: Colors.transparent,
-        fontFamily: _theme.labelStyle.fontFamily,
-        colorScheme: _theme.colorScheme,
+        hoverColor: Colors.grey.shade100,
       ),
       child: ListView(
-        shrinkWrap: true,
-        children: <Widget>[
-          ExpansionNode(
-            title: Text('Desktop'),
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.only(left: _theme.levelPadding),
-                child: ListView(
-                  shrinkWrap: true,
-                  children: <Widget>[
-                    ExpansionNode(
-                      title: Text('documents'),
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.only(left: _theme.levelPadding),
-                          child: ListView(
-                            shrinkWrap: true,
-                            children: <Widget>[
-                              ListTile(title: Text('Resume.docx')),
-                              ListTile(title: Text('Billing-Info.docx')),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          ListTile(title: Text('MeetingReport.xls')),
-          ListTile(title: Text('MeetingReport.pdf')),
-          ListTile(title: Text('Demo.zip')),
-        ],
+        padding: EdgeInsets.zero,
+        children: _controller.children.map((Node node) {
+          return TreeNode(node: node);
+        }).toList(),
       ),
     );
   }
