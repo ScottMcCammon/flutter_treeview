@@ -3,14 +3,14 @@ import 'package:flutter_treeview/src/enums.dart';
 import 'package:flutter_treeview/src/tree_view_controller.dart';
 import 'package:flutter_treeview/src/tree_view_theme.dart';
 
+import 'expansion_node.dart';
 import 'models/node.dart';
 import 'tree_node.dart';
 
 class TreeView extends InheritedWidget {
   final TreeViewController controller;
   final Function(String) onNodeSelect;
-  final Function(String) onNodeExpand;
-  final Function(String) onNodeCollapse;
+  final Function(String, bool) onExpansionChanged;
   final TreeViewTheme theme;
   final bool allowParentSelect;
 
@@ -18,8 +18,7 @@ class TreeView extends InheritedWidget {
     Key key,
     @required this.controller,
     this.onNodeSelect,
-    this.onNodeExpand,
-    this.onNodeCollapse,
+    this.onExpansionChanged,
     this.allowParentSelect: false,
     TreeViewTheme theme,
   })  : this.theme = theme ?? const TreeViewTheme(),
@@ -35,8 +34,7 @@ class TreeView extends InheritedWidget {
   bool updateShouldNotify(TreeView oldWidget) {
     return oldWidget.controller.children != this.controller.children ||
         oldWidget.onNodeSelect != this.onNodeSelect ||
-        oldWidget.onNodeExpand != this.onNodeExpand ||
-        oldWidget.onNodeCollapse != this.onNodeCollapse ||
+        oldWidget.onExpansionChanged != this.onExpansionChanged ||
         oldWidget.theme != this.theme ||
         oldWidget.allowParentSelect != this.allowParentSelect;
   }
@@ -68,24 +66,48 @@ class _TreeViewData extends StatelessWidget {
   }
 
   Widget buildIOSView() {
-    return ListView(
-      children: <Widget>[
-        ExpansionTile(
-          title: Text('Desktop'),
-          children: <Widget>[
-            ExpansionTile(
-              title: Text('documents'),
-              children: <Widget>[
-                ListTile(title: Text('Resume.docx')),
-                ListTile(title: Text('Billing-Info.docx')),
-              ],
-            ),
-            ListTile(title: Text('MeetingReport.xls')),
-            ListTile(title: Text('MeetingReport.pdf')),
-            ListTile(title: Text('Demo.zip')),
-          ],
-        ),
-      ],
+    return Theme(
+      data: ThemeData(
+        dividerColor: Colors.transparent,
+        fontFamily: _theme.labelStyle.fontFamily,
+        colorScheme: _theme.colorScheme,
+      ),
+      child: ListView(
+        shrinkWrap: true,
+        children: <Widget>[
+          ExpansionNode(
+            title: Text('Desktop'),
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(left: _theme.levelPadding),
+                child: ListView(
+                  shrinkWrap: true,
+                  children: <Widget>[
+                    ExpansionNode(
+                      title: Text('documents'),
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.only(left: _theme.levelPadding),
+                          child: ListView(
+                            shrinkWrap: true,
+                            children: <Widget>[
+                              ListTile(title: Text('Resume.docx')),
+                              ListTile(title: Text('Billing-Info.docx')),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          ListTile(title: Text('MeetingReport.xls')),
+          ListTile(title: Text('MeetingReport.pdf')),
+          ListTile(title: Text('Demo.zip')),
+        ],
+      ),
     );
   }
 }

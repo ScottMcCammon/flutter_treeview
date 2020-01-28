@@ -6,7 +6,7 @@ class TreeViewTheme {
     this.colorScheme: const ColorScheme.light(),
     this.iconTheme: const IconThemeData(),
     this.labelStyle: const TextStyle(),
-    this.levelPadding: 25,
+    this.levelPadding: 20,
     this.style: TreeViewStyle.classic,
     this.arrowStyle: ArrowStyle.arrow,
   });

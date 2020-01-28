@@ -8,7 +8,7 @@ class NodeIcon {
   final String fontFamily;
   final String color;
 
-  NodeIcon({this.codePoint, this.fontFamily, this.color: 'rgb(0,0,0)'})
+  NodeIcon({this.codePoint, this.fontFamily, this.color})
       : assert(codePoint != null);
 
   factory NodeIcon.fromString(String icon) {
@@ -41,7 +41,7 @@ class NodeIcon {
 
   IconData get icon => IconData(codePoint, fontFamily: fontFamily);
 
-  Color get iconColor => Utilities.getColor(color);
+  Color get iconColor => color == null ? null : Utilities.getColor(color);
 
   Map<String, dynamic> get asMap => {
         "codePoint": codePoint,

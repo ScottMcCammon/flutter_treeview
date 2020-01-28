@@ -8,14 +8,14 @@ void main() {
       final NodeIcon icon = NodeIcon.fromString('adb');
       expect(icon.codePoint, Icons.adb.codePoint);
       expect(icon.fontFamily, Icons.adb.fontFamily);
-      expect(icon.iconColor, Colors.black);
+      expect(icon.iconColor, null);
       expect(icon.icon.runtimeType, IconData);
     });
     test('from iconData', () {
       final NodeIcon icon = NodeIcon.fromIconData(Icons.adb);
       expect(icon.codePoint, Icons.adb.codePoint);
       expect(icon.fontFamily, Icons.adb.fontFamily);
-      expect(icon.iconColor, Colors.black);
+      expect(icon.iconColor, null);
       expect(icon.icon.runtimeType, IconData);
     });
     test('from map', () {

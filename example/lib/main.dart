@@ -30,17 +30,21 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     _nodes = [
-      Node(label: 'documents', key: 'docs', children: [
-        Node(label: 'personal', key: 'd3', children: [
-          Node(
-              label: 'Resume.docx',
-              key: 'pd1',
-              icon: NodeIcon.fromIconData(Icons.insert_drive_file)),
-          Node(
-              label: 'Cover Letter.docx',
-              key: 'pd2',
-              icon: NodeIcon.fromIconData(Icons.insert_drive_file)),
-        ]),
+      Node(label: 'documents', key: 'docs', expanded: true, children: [
+        Node(
+            label: 'personal',
+            key: 'd3',
+            icon: NodeIcon.fromIconData(Icons.input),
+            children: [
+              Node(
+                  label: 'Resume.docx',
+                  key: 'pd1',
+                  icon: NodeIcon.fromIconData(Icons.insert_drive_file)),
+              Node(
+                  label: 'Cover Letter.docx',
+                  key: 'pd2',
+                  icon: NodeIcon.fromIconData(Icons.insert_drive_file)),
+            ]),
         Node(
           label: 'Inspection.docx',
           key: 'd1',
@@ -83,8 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: TreeView(
           controller: _treeViewController,
           allowParentSelect: true,
-          onNodeCollapse: (key) => _expandNode(key, false),
-          onNodeExpand: (key) => _expandNode(key, true),
+          onExpansionChanged: (key, expanded) => _expandNode(key, expanded),
           onNodeSelect: (key) {
             debugPrint('Selected: $key');
             setState(() {
@@ -93,11 +96,16 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
           theme: TreeViewTheme(
-            arrowStyle: ArrowStyle.box,
+            arrowStyle: ArrowStyle.chevron,
+//            style: TreeViewStyle.iOS,
             labelStyle: TextStyle(
-              fontFamily: 'Times',
+//              fontFamily: 'Times',
               fontSize: 16,
               letterSpacing: 0.3,
+            ),
+            iconTheme: IconThemeData(
+              size: 18,
+              color: Colors.grey.shade800,
             ),
             colorScheme: Theme.of(context).brightness == Brightness.light
                 ? ColorScheme.light(

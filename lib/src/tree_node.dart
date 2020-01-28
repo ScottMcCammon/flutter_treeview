@@ -14,152 +14,201 @@ class TreeNode extends StatefulWidget {
 
 class _TreeNodeState extends State<TreeNode>
     with SingleTickerProviderStateMixin {
+  static final Animatable<double> _easeInTween =
+      CurveTween(curve: Curves.easeIn);
+  static Duration _kExpand = Duration(milliseconds: 200);
+  static double _kIconSize = 28;
+
+  AnimationController _controller;
+  Animation<double> _heightFactor;
+  bool _isExpanded = false;
+
   @override
-  Widget build(BuildContext context) {
-    TreeView treeView = TreeView.of(context);
-    assert(treeView != null, 'TreeView must exist in context');
-    bool isSelected = treeView.controller.selectedKey != null &&
-        treeView.controller.selectedKey == widget.node.key;
-    bool canSelectParent = treeView.allowParentSelect;
-    Function _parentExpand = () {
-      if (widget.node.expanded) {
-        if (treeView.onNodeCollapse != null) {
-          treeView.onNodeCollapse(widget.node.key);
-        }
+  void initState() {
+    super.initState();
+    _controller = AnimationController(duration: _kExpand, vsync: this);
+    _heightFactor = _controller.drive(_easeInTween);
+    _isExpanded = widget.node.expanded;
+    if (_isExpanded) _controller.value = 1.0;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleExpand() {
+    TreeView _treeView = TreeView.of(context);
+    assert(_treeView != null, 'TreeView must exist in context');
+    setState(() {
+      _isExpanded = !_isExpanded;
+      if (_isExpanded) {
+        _controller.forward();
       } else {
-        if (treeView.onNodeExpand != null) {
-          treeView.onNodeExpand(widget.node.key);
-        }
+        _controller.reverse().then<void>((void value) {
+          if (!mounted) return;
+          setState(() {});
+        });
       }
-    };
-    Function _parentSelect = () {
-      if (treeView.onNodeSelect != null) {
-        treeView.onNodeSelect(widget.node.key);
-      }
-    };
-    Function _select = () {
-      if (treeView.onNodeSelect != null) {
-        treeView.onNodeSelect(widget.node.key);
-      }
-    };
+    });
+    if (_treeView.onExpansionChanged != null)
+      _treeView.onExpansionChanged(widget.node.key, _isExpanded);
+  }
+
+  void _handleSelect() {
+    TreeView _treeView = TreeView.of(context);
+    assert(_treeView != null, 'TreeView must exist in context');
+    if (_treeView.onNodeSelect != null) {
+      _treeView.onNodeSelect(widget.node.key);
+    }
+  }
+
+  Icon _buildExpandWidget() {
+    TreeView _treeView = TreeView.of(context);
+    assert(_treeView != null, 'TreeView must exist in context');
+    TreeViewTheme _theme = _treeView.theme;
     IconData arrow;
-    if (treeView.theme.arrowStyle == ArrowStyle.chevron) {
+    if (_theme.arrowStyle == ArrowStyle.chevron) {
       arrow = widget.node.expanded ? Icons.expand_more : Icons.chevron_right;
-    } else if (treeView.theme.arrowStyle == ArrowStyle.longArrow) {
+    } else if (_theme.arrowStyle == ArrowStyle.longArrow) {
       arrow = widget.node.expanded ? Icons.arrow_downward : Icons.arrow_forward;
-    } else if (treeView.theme.arrowStyle == ArrowStyle.box) {
+    } else if (_theme.arrowStyle == ArrowStyle.box) {
       arrow =
           widget.node.expanded ? Icons.indeterminate_check_box : Icons.add_box;
-    } else if (treeView.theme.arrowStyle == ArrowStyle.filledCircle) {
+    } else if (_theme.arrowStyle == ArrowStyle.filledCircle) {
       arrow = widget.node.expanded ? Icons.remove_circle : Icons.add_circle;
-    } else if (treeView.theme.arrowStyle == ArrowStyle.circle) {
+    } else if (_theme.arrowStyle == ArrowStyle.circle) {
       arrow = widget.node.expanded
           ? Icons.remove_circle_outline
           : Icons.add_circle_outline;
     } else {
       arrow = widget.node.expanded ? Icons.arrow_drop_down : Icons.arrow_right;
     }
+    return Icon(
+      arrow,
+      size: 24,
+      color: _theme.iconTheme.color,
+    );
+  }
+
+  Widget _buildNodeTitle() {
+    TreeView _treeView = TreeView.of(context);
+    assert(_treeView != null, 'TreeView must exist in context');
+    TreeViewTheme _theme = _treeView.theme;
+    bool isSelected = _treeView.controller.selectedKey != null &&
+        _treeView.controller.selectedKey == widget.node.key;
+    bool canSelectParent = _treeView.allowParentSelect;
     final arrowContainer = widget.node.isParent
         ? GestureDetector(
-            onTap: _parentExpand,
+            onTap: () => _handleExpand(),
             child: Container(
-              width: treeView.theme.levelPadding,
-              margin: EdgeInsets.only(right: 10),
-              alignment: Alignment.bottomRight,
-              child: Icon(
-                arrow,
-                size: 24,
-                color: treeView.theme.iconTheme.color,
-              ),
+              width: _kIconSize,
+              alignment: Alignment.centerLeft,
+              child: _buildExpandWidget(),
             ),
           )
         : Container(
-            width: treeView.theme.levelPadding,
-            margin: EdgeInsets.only(right: 10),
+            width: _kIconSize,
           );
-    final icon = widget.node.hasIcon
-        ? Container(
-            padding: EdgeInsets.only(left: 10),
-            child: Icon(
+    final icon = Container(
+      width: widget.node.hasIcon ? _kIconSize : 10,
+      child: widget.node.hasIcon
+          ? Icon(
               widget.node.icon.icon,
-              size: treeView.theme.iconTheme.size,
+              size: _theme.iconTheme.size,
               color:
-                  widget.node.icon.iconColor ?? treeView.theme.iconTheme.color,
-            ),
-          )
-        : Container();
+                  widget.node.icon != null && widget.node.icon.iconColor != null
+                      ? widget.node.icon.iconColor
+                      : _theme.iconTheme.color,
+            )
+          : null,
+    );
     final labelContainer = Container(
-      width: double.infinity,
       color: isSelected
-          ? treeView.theme.colorScheme.primary
-          : treeView.theme.colorScheme.background,
-      child: Row(
-        children: <Widget>[
-          icon,
-          Expanded(
-            child: ListTile(
-              title: Text(
+          ? _theme.colorScheme.primary
+          : _theme.colorScheme.background,
+      child: ListTile(
+        contentPadding: EdgeInsets.only(left: 2),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            icon,
+            Expanded(
+              child: Text(
                 widget.node.label,
-                style: treeView.theme.labelStyle.copyWith(
+                style: _theme.labelStyle.copyWith(
                     color: isSelected
-                        ? treeView.theme.colorScheme.onPrimary
-                        : treeView.theme.colorScheme.onBackground),
+                        ? _theme.colorScheme.onPrimary
+                        : _theme.colorScheme.onBackground),
               ),
-              dense: true,
             ),
-          ),
-        ],
+          ],
+        ),
+        dense: true,
       ),
     );
     final labelExpanded = widget.node.isParent
         ? Expanded(
             child: GestureDetector(
-              onTap: canSelectParent ? _parentSelect : _parentExpand,
-//TODO: having doubleTap included makes the select delayed
-//              onDoubleTap: _parentExpand,
+              onTap: canSelectParent ? _handleSelect : _handleExpand,
+//              onDoubleTap: _parentExpand, //TODO: having doubleTap included makes the select delayed
               child: labelContainer,
             ),
           )
         : Expanded(
             child: GestureDetector(
-              onTap: _select,
+              onTap: _handleSelect,
               child: labelContainer,
             ),
           );
-    final nodeLabel = Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[arrowContainer, labelExpanded],
+    return Row(
+      children: <Widget>[
+        arrowContainer,
+        labelExpanded,
+      ],
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    TreeView _treeView = TreeView.of(context);
+    assert(_treeView != null, 'TreeView must exist in context');
+    TreeViewTheme _theme = _treeView.theme;
+    final bool closed = !_isExpanded && _controller.isDismissed;
+    final nodeLabel = _buildNodeTitle();
     return widget.node.isParent
-        ? Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              nodeLabel,
-              AnimatedSize(
-                vsync: this,
-                curve: Curves.fastOutSlowIn,
-                duration: Duration(milliseconds: 150),
-                child: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.only(left: treeView.theme.levelPadding),
-                  child: widget.node.expanded
-                      ? Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: widget.node.children.map((Node node) {
-                            return TreeNode(node: node);
-                          }).toList(),
-                        )
-                      : null,
+        ? AnimatedBuilder(
+            animation: _controller.view,
+            builder: (BuildContext context, Widget child) {
+              return Container(
+                padding: EdgeInsets.only(left: _kIconSize),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    nodeLabel,
+                    ClipRect(
+                      child: Align(
+                        heightFactor: _heightFactor.value,
+                        child: child,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              );
+            },
+            child: closed
+                ? null
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: widget.node.children.map((Node node) {
+                      return TreeNode(node: node);
+                    }).toList()),
           )
-        : nodeLabel;
+        : Container(
+            margin: EdgeInsets.only(left: _kIconSize),
+            child: nodeLabel,
+          );
   }
 }
