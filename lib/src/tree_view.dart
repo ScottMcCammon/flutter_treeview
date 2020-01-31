@@ -7,7 +7,8 @@ import 'tree_node.dart';
 
 class TreeView extends InheritedWidget {
   final TreeViewController controller;
-  final Function(String) onNodeSelect;
+  final Function(String) onNodeTap;
+  final Function(String) onNodeDoubleTap;
   final Function(String, bool) onExpansionChanged;
   final TreeViewTheme theme;
   final bool allowParentSelect;
@@ -16,7 +17,8 @@ class TreeView extends InheritedWidget {
   TreeView({
     Key key,
     @required this.controller,
-    this.onNodeSelect,
+    this.onNodeTap,
+    this.onNodeDoubleTap,
     this.onExpansionChanged,
     this.allowParentSelect: false,
     this.supportParentDoubleTap: false,
@@ -33,7 +35,7 @@ class TreeView extends InheritedWidget {
   @override
   bool updateShouldNotify(TreeView oldWidget) {
     return oldWidget.controller.children != this.controller.children ||
-        oldWidget.onNodeSelect != this.onNodeSelect ||
+        oldWidget.onNodeTap != this.onNodeTap ||
         oldWidget.onExpansionChanged != this.onExpansionChanged ||
         oldWidget.theme != this.theme ||
         oldWidget.supportParentDoubleTap != this.supportParentDoubleTap ||

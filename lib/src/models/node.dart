@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_treeview/src/utilities.dart';
 
@@ -83,5 +84,28 @@ class Node {
   @override
   String toString() {
     return JsonEncoder().convert(asMap);
+  }
+
+  @override
+  int get hashCode {
+    return hashValues(
+      key,
+      label,
+      icon,
+      expanded,
+      children,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    return other is Node &&
+        other.key == key &&
+        other.label == label &&
+        other.icon == icon &&
+        other.expanded == expanded &&
+        other.children.length == children.length;
   }
 }

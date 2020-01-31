@@ -1,40 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_treeview/src/enums.dart';
+import 'package:flutter_treeview/src/expander_theme_data.dart';
+
+const double _kDefaultLevelPadding = 20;
 
 class TreeViewTheme {
-  const TreeViewTheme({
-    this.colorScheme: const ColorScheme.light(),
-    this.iconTheme: const IconThemeData(),
-    this.labelStyle: const TextStyle(),
-    this.levelPadding: 20,
-    this.position: ExpanderPosition.start,
-    this.expanderStyle: ExpanderStyle.arrow,
-  });
-
   final ColorScheme colorScheme;
   final double levelPadding;
   final IconThemeData iconTheme;
+  final ExpanderThemeData expanderTheme;
   final TextStyle labelStyle;
-  final ExpanderPosition position;
-  final ExpanderStyle expanderStyle;
+
+  const TreeViewTheme({
+    this.colorScheme,
+    this.iconTheme,
+    this.expanderTheme,
+    this.labelStyle,
+    this.levelPadding,
+  });
+
+  const TreeViewTheme.fallback()
+      : colorScheme = const ColorScheme.light(),
+        iconTheme = const IconThemeData.fallback(),
+        expanderTheme = const ExpanderThemeData.fallback(),
+        labelStyle = const TextStyle(),
+        levelPadding = _kDefaultLevelPadding;
 
   TreeViewTheme copyWith({
     ColorScheme colorScheme,
     IconThemeData iconTheme,
+    ExpanderThemeData expanderTheme,
     TextStyle labelStyle,
-    ExpanderPosition position,
-    ExpanderStyle arrowStyle,
     double levelPadding,
   }) {
     return TreeViewTheme(
       colorScheme: colorScheme ?? this.colorScheme,
       levelPadding: levelPadding ?? this.levelPadding,
       iconTheme: iconTheme ?? this.iconTheme,
+      expanderTheme: expanderTheme ?? this.expanderTheme,
       labelStyle: labelStyle ?? this.labelStyle,
-      position: position ?? this.position,
-      expanderStyle: arrowStyle ?? this.expanderStyle,
     );
   }
+
+  TreeViewTheme merge(TreeViewTheme other) {
+    if (other == null) return this;
+    return copyWith(
+      colorScheme: other.colorScheme,
+      levelPadding: other.levelPadding,
+      iconTheme: other.iconTheme,
+      expanderTheme: other.expanderTheme,
+      labelStyle: other.labelStyle,
+    );
+  }
+
+  TreeViewTheme resolve(BuildContext context) => this;
 
   @override
   int get hashCode {
@@ -42,9 +60,8 @@ class TreeViewTheme {
       colorScheme,
       levelPadding,
       iconTheme,
+      expanderTheme,
       labelStyle,
-      position,
-      expanderStyle,
     );
   }
 
@@ -56,8 +73,7 @@ class TreeViewTheme {
         other.colorScheme == colorScheme &&
         other.levelPadding == levelPadding &&
         other.iconTheme == iconTheme &&
-        other.position == position &&
-        other.expanderStyle == expanderStyle &&
+        other.expanderTheme == expanderTheme &&
         other.labelStyle == labelStyle;
   }
 }

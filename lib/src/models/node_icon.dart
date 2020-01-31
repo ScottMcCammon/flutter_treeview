@@ -56,4 +56,23 @@ class NodeIcon {
   String toString() {
     return JsonEncoder().convert(asMap);
   }
+
+  @override
+  int get hashCode {
+    return hashValues(
+      codePoint,
+      color,
+      icon,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    return other is NodeIcon &&
+        other.color == color &&
+        other.codePoint == codePoint &&
+        other.icon == icon;
+  }
 }

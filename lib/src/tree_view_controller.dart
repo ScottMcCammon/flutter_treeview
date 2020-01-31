@@ -1,8 +1,12 @@
 import 'dart:convert';
 
-import 'package:flutter_treeview/src/enums.dart';
-
 import 'models/node.dart';
+
+enum InsertMode {
+  prepend,
+  append,
+  insert,
+}
 
 class TreeViewController {
   final List<Node> children;

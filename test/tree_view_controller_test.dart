@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_treeview/src/models/node.dart';
-import 'package:flutter_treeview/src/models/node_icon.dart';
 import 'package:flutter_treeview/src/tree_view_controller.dart';
 
 void main() {

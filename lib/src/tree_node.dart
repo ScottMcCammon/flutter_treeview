@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_treeview/src/tree_view_icons.dart';
 import 'package:flutter_treeview/tree_view.dart';
 
+import 'expander_theme_data.dart';
 import 'models/node.dart';
 
 class TreeNode extends StatefulWidget {
@@ -56,11 +58,19 @@ class _TreeNodeState extends State<TreeNode>
       _treeView.onExpansionChanged(widget.node.key, _isExpanded);
   }
 
-  void _handleSelect() {
+  void _handleTap() {
     TreeView _treeView = TreeView.of(context);
     assert(_treeView != null, 'TreeView must exist in context');
-    if (_treeView.onNodeSelect != null) {
-      _treeView.onNodeSelect(widget.node.key);
+    if (_treeView.onNodeTap != null) {
+      _treeView.onNodeTap(widget.node.key);
+    }
+  }
+
+  void _handleDoubleTap() {
+    TreeView _treeView = TreeView.of(context);
+    assert(_treeView != null, 'TreeView must exist in context');
+    if (_treeView.onNodeDoubleTap != null) {
+      _treeView.onNodeDoubleTap(widget.node.key);
     }
   }
 
@@ -68,36 +78,13 @@ class _TreeNodeState extends State<TreeNode>
     TreeView _treeView = TreeView.of(context);
     assert(_treeView != null, 'TreeView must exist in context');
     TreeViewTheme _theme = _treeView.theme;
-    IconData arrow;
-    if (_theme.expanderStyle == ExpanderStyle.chevron) {
-      arrow = widget.node.expanded ? Icons.expand_more : Icons.chevron_right;
-    } else if (_theme.expanderStyle == ExpanderStyle.longArrow) {
-      arrow = widget.node.expanded ? Icons.arrow_downward : Icons.arrow_forward;
-    } else if (_theme.expanderStyle == ExpanderStyle.box) {
-      arrow =
-          widget.node.expanded ? Icons.indeterminate_check_box : Icons.add_box;
-    } else if (_theme.expanderStyle == ExpanderStyle.filledCircle) {
-      arrow = widget.node.expanded ? Icons.remove_circle : Icons.add_circle;
-    } else if (_theme.expanderStyle == ExpanderStyle.circle) {
-      arrow = widget.node.expanded
-          ? Icons.remove_circle_outline
-          : Icons.add_circle_outline;
-    } else {
-      arrow = widget.node.expanded ? Icons.arrow_drop_down : Icons.arrow_right;
-    }
     return widget.node.isParent
         ? GestureDetector(
             onTap: () => _handleExpand(),
-            child: Container(
-              width: _kIconSize,
-              alignment: _theme.position == ExpanderPosition.end
-                  ? Alignment.centerLeft
-                  : Alignment.centerRight,
-              child: Icon(
-                arrow,
-                size: 24,
-                color: _theme.iconTheme.color,
-              ),
+            child: _TreeNodeExpander(
+              expanded: widget.node.expanded,
+              containerSize: _kIconSize,
+              themeData: _theme.expanderTheme,
             ),
           )
         : Container(
@@ -168,21 +155,37 @@ class _TreeNodeState extends State<TreeNode>
     bool canSelectParent = _treeView.allowParentSelect;
     final arrowContainer = _buildNodeExpander();
     final labelContainer = _buildNodeLabel();
-    Widget _tappable = InkWell(
-      hoverColor: Colors.blue,
-      onTap: _handleSelect,
-      child: labelContainer,
-    );
+    Widget _tappable = _treeView.onNodeDoubleTap != null
+        ? InkWell(
+            hoverColor: Colors.blue,
+            onTap: _handleTap,
+            onDoubleTap: _handleDoubleTap,
+            child: labelContainer,
+          )
+        : InkWell(
+            hoverColor: Colors.blue,
+            onTap: _handleTap,
+            child: labelContainer,
+          );
     if (widget.node.isParent) {
       if (_treeView.supportParentDoubleTap && canSelectParent) {
         _tappable = InkWell(
-          onTap: canSelectParent ? _handleSelect : _handleExpand,
-          onDoubleTap: _handleExpand,
+          onTap: canSelectParent ? _handleTap : _handleExpand,
+          onDoubleTap: () {
+            _handleExpand();
+            _handleDoubleTap();
+          },
+          child: labelContainer,
+        );
+      } else if (_treeView.supportParentDoubleTap) {
+        _tappable = InkWell(
+          onTap: _handleExpand,
+          onDoubleTap: _handleDoubleTap,
           child: labelContainer,
         );
       } else {
         _tappable = InkWell(
-          onTap: canSelectParent ? _handleSelect : _handleExpand,
+          onTap: canSelectParent ? _handleTap : _handleExpand,
           child: labelContainer,
         );
       }
@@ -194,7 +197,7 @@ class _TreeNodeState extends State<TreeNode>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: _theme.position == ExpanderPosition.end
+        children: _theme.expanderTheme.position == ExpanderPosition.end
             ? <Widget>[
                 Expanded(
                   child: _tappable,
@@ -248,5 +251,137 @@ class _TreeNodeState extends State<TreeNode>
         : Container(
             child: nodeLabel,
           );
+  }
+}
+
+class _TreeNodeExpander extends StatelessWidget {
+  final ExpanderThemeData themeData;
+  final bool expanded;
+  final double containerSize;
+
+  const _TreeNodeExpander({
+    this.themeData,
+    this.expanded,
+    this.containerSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    IconData arrow;
+    if (themeData.position == ExpanderPosition.end) {
+      switch (themeData.type) {
+        case ExpanderType.arrow:
+          arrow = expanded ? TreeViewIcons.arrow_down : TreeViewIcons.arrow_up;
+          break;
+        case ExpanderType.chevron:
+          arrow = expanded ? TreeViewIcons.down : TreeViewIcons.up;
+          break;
+        case ExpanderType.circleChevron:
+          arrow = expanded
+              ? TreeViewIcons.down_circle_fill
+              : TreeViewIcons.up_circle_fill;
+          break;
+        case ExpanderType.circleChevronOutline:
+          arrow =
+              expanded ? TreeViewIcons.down_circle : TreeViewIcons.up_circle;
+          break;
+        case ExpanderType.circlePlusMinus:
+          arrow = expanded
+              ? TreeViewIcons.minus_circle_fill
+              : TreeViewIcons.plus_circle_fill;
+          break;
+        case ExpanderType.circlePlusMinusOutline:
+          arrow =
+              expanded ? TreeViewIcons.minus_circle : TreeViewIcons.plus_circle;
+          break;
+        case ExpanderType.plusMinus:
+          arrow = expanded ? TreeViewIcons.minus : TreeViewIcons.plus;
+          break;
+        case ExpanderType.squareChevron:
+          arrow = expanded
+              ? TreeViewIcons.down_square_fill
+              : TreeViewIcons.up_square_fill;
+          break;
+        case ExpanderType.squareChevronOutline:
+          arrow =
+              expanded ? TreeViewIcons.down_square : TreeViewIcons.up_square;
+          break;
+        case ExpanderType.squarePlusMinus:
+          arrow = expanded
+              ? TreeViewIcons.minus_square_fill
+              : TreeViewIcons.plus_square_fill;
+          break;
+        case ExpanderType.squarePlusMinusOutline:
+          arrow =
+              expanded ? TreeViewIcons.minus_square : TreeViewIcons.plus_square;
+          break;
+        default:
+          arrow = expanded ? TreeViewIcons.caret_down : TreeViewIcons.caret_up;
+      }
+    } else {
+      switch (themeData.type) {
+        case ExpanderType.arrow:
+          arrow =
+              expanded ? TreeViewIcons.arrow_down : TreeViewIcons.arrow_right;
+          break;
+        case ExpanderType.chevron:
+          arrow = expanded ? TreeViewIcons.down : TreeViewIcons.right;
+          break;
+        case ExpanderType.circleChevron:
+          arrow = expanded
+              ? TreeViewIcons.down_circle_fill
+              : TreeViewIcons.right_circle_fill;
+          break;
+        case ExpanderType.circleChevronOutline:
+          arrow =
+              expanded ? TreeViewIcons.down_circle : TreeViewIcons.right_circle;
+          break;
+        case ExpanderType.circlePlusMinus:
+          arrow = expanded
+              ? TreeViewIcons.minus_circle_fill
+              : TreeViewIcons.plus_circle_fill;
+          break;
+        case ExpanderType.circlePlusMinusOutline:
+          arrow =
+              expanded ? TreeViewIcons.minus_circle : TreeViewIcons.plus_circle;
+          break;
+        case ExpanderType.plusMinus:
+          arrow = expanded ? TreeViewIcons.minus : TreeViewIcons.plus;
+          break;
+        case ExpanderType.squareChevron:
+          arrow = expanded
+              ? TreeViewIcons.down_square_fill
+              : TreeViewIcons.right_square_fill;
+          break;
+        case ExpanderType.squareChevronOutline:
+          arrow =
+              expanded ? TreeViewIcons.down_square : TreeViewIcons.right_square;
+          break;
+        case ExpanderType.squarePlusMinus:
+          arrow = expanded
+              ? TreeViewIcons.minus_square_fill
+              : TreeViewIcons.plus_square_fill;
+          break;
+        case ExpanderType.squarePlusMinusOutline:
+          arrow =
+              expanded ? TreeViewIcons.minus_square : TreeViewIcons.plus_square;
+          break;
+        default:
+          arrow =
+              expanded ? TreeViewIcons.caret_down : TreeViewIcons.caret_right;
+          break;
+      }
+    }
+    return Container(
+      width: containerSize,
+      alignment: themeData.position == ExpanderPosition.end
+          ? Alignment.centerLeft
+          : Alignment.centerRight,
+      child: Icon(
+        arrow,
+        size: themeData.size,
+        color: themeData.color,
+      ),
+    );
   }
 }
