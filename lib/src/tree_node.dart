@@ -151,11 +151,15 @@ class _TreeNodeState extends State<TreeNode>
               widget.node.label,
               style: widget.node.isParent
                   ? _theme.parentLabelStyle.copyWith(
+                      fontWeight: _theme.parentLabelStyle.fontWeight,
                       color: isSelected
                           ? _theme.colorScheme.onPrimary
-                          : _theme.colorScheme.onBackground,
+                          : _theme.parentLabelStyle.color == TextStyle().color
+                              ? _theme.colorScheme.onBackground
+                              : _theme.parentLabelStyle.color,
                     )
                   : _theme.labelStyle.copyWith(
+                      fontWeight: _theme.labelStyle.fontWeight,
                       color: isSelected
                           ? _theme.colorScheme.onPrimary
                           : _theme.colorScheme.onBackground,

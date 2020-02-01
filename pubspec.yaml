@@ -1,11 +1,12 @@
 name: flutter_treeview
 description: A hierarchical data widget for Flutter
-version: 0.0.3+1
+version: 0.0.3+4
 author: kevinandre.com <kevin@codeninelabs.com>
 homepage: https://bitbucket.org/xsokev/flutter_treeview/src/master/
 repository: https://bitbucket.org/xsokev/flutter_treeview/src/master/
 issue_tracker: https://bitbucket.org/kevinandre/flutter_treeview/issues
 documentation: https://bitbucket.org/kevinandre/flutter_treeview/wiki/Home
+api: https://pub.dev/documentation/flutter_treeview/latest/
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
