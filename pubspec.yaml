@@ -1,6 +1,6 @@
 name: flutter_treeview
 description: A hierarchical data widget for Flutter
-version: 0.0.1
+version: 0.0.2+1
 author: kevinandre.com <kevin@codeninelabs.com>
 homepage: https://bitbucket.org/xsokev/flutter_treeview/src/master/
 repository: https://bitbucket.org/xsokev/flutter_treeview/src/master/
@@ -20,8 +20,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-  fonts:
-    - family: 'TreeViewIcons'
-      fonts:
-        - asset: assets/fonts/treeviewicons.ttf

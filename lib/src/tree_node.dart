@@ -1,9 +1,14 @@
+import 'dart:math' show pi;
+
 import 'package:flutter/material.dart';
-import 'package:flutter_treeview/src/tree_view_icons.dart';
 import 'package:flutter_treeview/tree_view.dart';
 
 import 'expander_theme_data.dart';
 import 'models/node.dart';
+
+const int _kExpander180Speed = 200;
+const int _kExpander90Speed = 125;
+const double _kBorderWidth = 0.75;
 
 class TreeNode extends StatefulWidget {
   final Node node;
@@ -83,7 +88,6 @@ class _TreeNodeState extends State<TreeNode>
             onTap: () => _handleExpand(),
             child: _TreeNodeExpander(
               expanded: widget.node.expanded,
-              containerSize: _kIconSize,
               themeData: _theme.expanderTheme,
             ),
           )
@@ -254,133 +258,159 @@ class _TreeNodeState extends State<TreeNode>
   }
 }
 
-class _TreeNodeExpander extends StatelessWidget {
+class _TreeNodeExpander extends StatefulWidget {
   final ExpanderThemeData themeData;
   final bool expanded;
-  final double containerSize;
 
   const _TreeNodeExpander({
     this.themeData,
     this.expanded,
-    this.containerSize,
   });
 
   @override
-  Widget build(BuildContext context) {
-    IconData arrow;
-    if (themeData.position == ExpanderPosition.end) {
-      switch (themeData.type) {
-        case ExpanderType.arrow:
-          arrow = expanded ? TreeViewIcons.arrow_down : TreeViewIcons.arrow_up;
-          break;
-        case ExpanderType.chevron:
-          arrow = expanded ? TreeViewIcons.down : TreeViewIcons.up;
-          break;
-        case ExpanderType.circleChevron:
-          arrow = expanded
-              ? TreeViewIcons.down_circle_fill
-              : TreeViewIcons.up_circle_fill;
-          break;
-        case ExpanderType.circleChevronOutline:
-          arrow =
-              expanded ? TreeViewIcons.down_circle : TreeViewIcons.up_circle;
-          break;
-        case ExpanderType.circlePlusMinus:
-          arrow = expanded
-              ? TreeViewIcons.minus_circle_fill
-              : TreeViewIcons.plus_circle_fill;
-          break;
-        case ExpanderType.circlePlusMinusOutline:
-          arrow =
-              expanded ? TreeViewIcons.minus_circle : TreeViewIcons.plus_circle;
-          break;
-        case ExpanderType.plusMinus:
-          arrow = expanded ? TreeViewIcons.minus : TreeViewIcons.plus;
-          break;
-        case ExpanderType.squareChevron:
-          arrow = expanded
-              ? TreeViewIcons.down_square_fill
-              : TreeViewIcons.up_square_fill;
-          break;
-        case ExpanderType.squareChevronOutline:
-          arrow =
-              expanded ? TreeViewIcons.down_square : TreeViewIcons.up_square;
-          break;
-        case ExpanderType.squarePlusMinus:
-          arrow = expanded
-              ? TreeViewIcons.minus_square_fill
-              : TreeViewIcons.plus_square_fill;
-          break;
-        case ExpanderType.squarePlusMinusOutline:
-          arrow =
-              expanded ? TreeViewIcons.minus_square : TreeViewIcons.plus_square;
-          break;
-        default:
-          arrow = expanded ? TreeViewIcons.caret_down : TreeViewIcons.caret_up;
-      }
+  _TreeNodeExpanderState createState() => _TreeNodeExpanderState();
+}
+
+class _TreeNodeExpanderState extends State<_TreeNodeExpander>
+    with SingleTickerProviderStateMixin {
+  Animation<double> animation;
+  AnimationController controller;
+
+  @override
+  void initState() {
+    bool isEnd = widget.themeData.position == ExpanderPosition.end;
+    if (widget.themeData.type != ExpanderType.plusMinus) {
+      controller = AnimationController(
+        duration: Duration(
+            milliseconds: widget.themeData.animated
+                ? isEnd ? _kExpander180Speed : _kExpander90Speed
+                : 0),
+        vsync: this,
+      );
+      animation = Tween<double>(
+        begin: 0,
+        end: isEnd ? 180 : 90,
+      ).animate(controller);
     } else {
-      switch (themeData.type) {
-        case ExpanderType.arrow:
-          arrow =
-              expanded ? TreeViewIcons.arrow_down : TreeViewIcons.arrow_right;
-          break;
-        case ExpanderType.chevron:
-          arrow = expanded ? TreeViewIcons.down : TreeViewIcons.right;
-          break;
-        case ExpanderType.circleChevron:
-          arrow = expanded
-              ? TreeViewIcons.down_circle_fill
-              : TreeViewIcons.right_circle_fill;
-          break;
-        case ExpanderType.circleChevronOutline:
-          arrow =
-              expanded ? TreeViewIcons.down_circle : TreeViewIcons.right_circle;
-          break;
-        case ExpanderType.circlePlusMinus:
-          arrow = expanded
-              ? TreeViewIcons.minus_circle_fill
-              : TreeViewIcons.plus_circle_fill;
-          break;
-        case ExpanderType.circlePlusMinusOutline:
-          arrow =
-              expanded ? TreeViewIcons.minus_circle : TreeViewIcons.plus_circle;
-          break;
-        case ExpanderType.plusMinus:
-          arrow = expanded ? TreeViewIcons.minus : TreeViewIcons.plus;
-          break;
-        case ExpanderType.squareChevron:
-          arrow = expanded
-              ? TreeViewIcons.down_square_fill
-              : TreeViewIcons.right_square_fill;
-          break;
-        case ExpanderType.squareChevronOutline:
-          arrow =
-              expanded ? TreeViewIcons.down_square : TreeViewIcons.right_square;
-          break;
-        case ExpanderType.squarePlusMinus:
-          arrow = expanded
-              ? TreeViewIcons.minus_square_fill
-              : TreeViewIcons.plus_square_fill;
-          break;
-        case ExpanderType.squarePlusMinusOutline:
-          arrow =
-              expanded ? TreeViewIcons.minus_square : TreeViewIcons.plus_square;
-          break;
-        default:
-          arrow =
-              expanded ? TreeViewIcons.caret_down : TreeViewIcons.caret_right;
-          break;
-      }
+      controller =
+          AnimationController(duration: Duration(milliseconds: 0), vsync: this);
+      animation = Tween<double>(begin: 0, end: 0).animate(controller);
+    }
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(_TreeNodeExpander oldWidget) {
+    if (widget.themeData != oldWidget.themeData ||
+        widget.expanded != oldWidget.expanded) {
+      bool isEnd = widget.themeData.position == ExpanderPosition.end;
+      setState(() {
+        if (widget.themeData.type != ExpanderType.plusMinus) {
+          controller.duration = Duration(
+              milliseconds: widget.themeData.animated
+                  ? isEnd ? _kExpander180Speed : _kExpander90Speed
+                  : 0);
+          animation = Tween<double>(
+            begin: 0,
+            end: isEnd ? 180 : 90,
+          ).animate(controller);
+        } else {
+          controller.duration = Duration(milliseconds: 0);
+          animation = Tween<double>(begin: 0, end: 0).animate(controller);
+        }
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  Color _onColor(Color color) {
+    if (color.computeLuminance() > 0.6) {
+      return Colors.black;
+    } else {
+      return Colors.white;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    IconData _arrow;
+    double _iconSize = widget.themeData.size;
+    double _borderWidth = 0;
+    BoxShape _shapeBorder = BoxShape.rectangle;
+    Color _backColor = Colors.transparent;
+    Color _iconColor = widget.themeData.color;
+    switch (widget.themeData.modifier) {
+      case ExpanderModifier.none:
+        break;
+      case ExpanderModifier.circleFilled:
+        _shapeBorder = BoxShape.circle;
+        _backColor = widget.themeData.color;
+        _iconColor = _onColor(_backColor);
+        break;
+      case ExpanderModifier.circleOutlined:
+        _borderWidth = _kBorderWidth;
+        _shapeBorder = BoxShape.circle;
+        break;
+      case ExpanderModifier.squareFilled:
+        _backColor = widget.themeData.color;
+        _iconColor = _onColor(_backColor);
+        break;
+      case ExpanderModifier.squareOutlined:
+        _borderWidth = _kBorderWidth;
+        break;
+    }
+    switch (widget.themeData.type) {
+      case ExpanderType.chevron:
+        _arrow = Icons.expand_more;
+        break;
+      case ExpanderType.arrow:
+        _arrow = Icons.arrow_downward;
+        _iconSize = widget.themeData.size > 20
+            ? widget.themeData.size - 8
+            : widget.themeData.size;
+        break;
+      case ExpanderType.caret:
+        _arrow = Icons.arrow_drop_down;
+        break;
+      case ExpanderType.plusMinus:
+        _arrow = widget.expanded ? Icons.remove : Icons.add;
+        break;
+    }
+
+    Icon _icon = Icon(
+      _arrow,
+      size: _iconSize,
+      color: _iconColor,
+    );
+
+    if (widget.expanded) {
+      controller.reverse();
+    } else {
+      controller.forward();
     }
     return Container(
-      width: containerSize,
-      alignment: themeData.position == ExpanderPosition.end
-          ? Alignment.centerLeft
-          : Alignment.centerRight,
-      child: Icon(
-        arrow,
-        size: themeData.size,
-        color: themeData.color,
+      width: widget.themeData.size + 2,
+      height: widget.themeData.size + 2,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: _shapeBorder,
+        border: _borderWidth == 0
+            ? null
+            : Border.all(
+                width: _borderWidth,
+                color: widget.themeData.color,
+              ),
+        color: _backColor,
+      ),
+      child: AnimatedBuilder(
+        animation: controller,
+        child: _icon,
+        builder: (context, child) {
+          return Transform.rotate(
+            angle: animation.value * (-pi / 180),
+            child: child,
+          );
+        },
       ),
     );
   }

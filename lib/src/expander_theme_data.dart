@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-const double _kDefaultExpanderSize = 18.0;
+const double _kDefaultExpanderSize = 30.0;
 
 enum ExpanderPosition {
   start,
@@ -8,18 +8,18 @@ enum ExpanderPosition {
 }
 
 enum ExpanderType {
-  arrow,
   caret,
+  arrow,
   chevron,
-  circleChevron,
-  circleChevronOutline,
-  circlePlusMinus,
-  circlePlusMinusOutline,
   plusMinus,
-  squareChevron,
-  squareChevronOutline,
-  squarePlusMinus,
-  squarePlusMinusOutline,
+}
+
+enum ExpanderModifier {
+  none,
+  circleFilled,
+  circleOutlined,
+  squareFilled,
+  squareOutlined,
 }
 
 class ExpanderThemeData {
@@ -27,25 +27,41 @@ class ExpanderThemeData {
   final ExpanderType type;
   final double size;
   final Color color;
+  final ExpanderModifier modifier;
+  final bool animated;
 
-  const ExpanderThemeData({this.color, this.position, this.type, this.size});
+  const ExpanderThemeData({
+    this.color: const Color(0xFF000000),
+    this.position: ExpanderPosition.start,
+    this.type: ExpanderType.caret,
+    this.size: _kDefaultExpanderSize,
+    this.modifier: ExpanderModifier.none,
+    this.animated: true,
+  });
 
   const ExpanderThemeData.fallback()
       : color = const Color(0xFF000000),
         position = ExpanderPosition.start,
         type = ExpanderType.caret,
+        modifier = ExpanderModifier.none,
+        animated = true,
         size = _kDefaultExpanderSize;
 
-  ExpanderThemeData copyWith(
-      {Color color,
-      ExpanderType type,
-      ExpanderPosition position,
-      double size}) {
+  ExpanderThemeData copyWith({
+    Color color,
+    ExpanderType type,
+    ExpanderPosition position,
+    ExpanderModifier modifier,
+    bool animated,
+    double size,
+  }) {
     return ExpanderThemeData(
       color: color ?? this.color,
       type: type ?? this.type,
       position: position ?? this.position,
+      modifier: modifier ?? this.modifier,
       size: size ?? this.size,
+      animated: animated ?? this.animated,
     );
   }
 
@@ -55,6 +71,8 @@ class ExpanderThemeData {
       color: other.color,
       type: other.type,
       position: other.position,
+      modifier: other.modifier,
+      animated: other.animated,
       size: other.size,
     );
   }
@@ -70,9 +88,12 @@ class ExpanderThemeData {
         other.color == color &&
         other.position == position &&
         other.type == type &&
+        other.modifier == modifier &&
+        other.animated == animated &&
         other.size == size;
   }
 
   @override
-  int get hashCode => hashValues(color, position, type, size);
+  int get hashCode =>
+      hashValues(color, position, type, size, modifier, animated);
 }

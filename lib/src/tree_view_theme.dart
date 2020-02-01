@@ -11,11 +11,11 @@ class TreeViewTheme {
   final TextStyle labelStyle;
 
   const TreeViewTheme({
-    this.colorScheme,
-    this.iconTheme,
-    this.expanderTheme,
-    this.labelStyle,
-    this.levelPadding,
+    this.colorScheme: const ColorScheme.light(),
+    this.iconTheme: const IconThemeData.fallback(),
+    this.expanderTheme: const ExpanderThemeData.fallback(),
+    this.labelStyle: const TextStyle(),
+    this.levelPadding: _kDefaultLevelPadding,
   });
 
   const TreeViewTheme.fallback()
