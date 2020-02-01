@@ -10,7 +10,18 @@ const int _kExpander180Speed = 200;
 const int _kExpander90Speed = 125;
 const double _kBorderWidth = 0.75;
 
+/// Defines the [TreeNode] widget.
+///
+/// This widget is used to display a tree node and its children. It requires
+/// a single [Node] value. It uses this node to display the state of the
+/// widget. It uses the [TreeViewTheme] to handle the appearance and the
+/// [TreeView] properties to handle to user actions.
+///
+/// __This class should not be used directly!__
+/// The [TreeView] and [TreeViewController] handlers the data and rendering
+/// of the nodes.
 class TreeNode extends StatefulWidget {
+  /// The node object used to display the widget state
   final Node node;
 
   const TreeNode({Key key, @required this.node}) : super(key: key);
@@ -138,11 +149,17 @@ class _TreeNodeState extends State<TreeNode>
           Expanded(
             child: Text(
               widget.node.label,
-              style: _theme.labelStyle.copyWith(
-                color: isSelected
-                    ? _theme.colorScheme.onPrimary
-                    : _theme.colorScheme.onBackground,
-              ),
+              style: widget.node.isParent
+                  ? _theme.parentLabelStyle.copyWith(
+                      color: isSelected
+                          ? _theme.colorScheme.onPrimary
+                          : _theme.colorScheme.onBackground,
+                    )
+                  : _theme.labelStyle.copyWith(
+                      color: isSelected
+                          ? _theme.colorScheme.onPrimary
+                          : _theme.colorScheme.onBackground,
+                    ),
             ),
           ),
         ],
