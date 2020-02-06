@@ -109,7 +109,7 @@ class TreeViewController {
     List<Node> _children = parent == null ? this.children : parent.children;
     return _children.map((Node child) {
       if (child.key == key) {
-        List<Node> _children = child.children;
+        List<Node> _children = child.children.toList(growable: true);
         if (mode == InsertMode.prepend) {
           _children.insert(0, newNode);
         } else if (mode == InsertMode.insert) {
