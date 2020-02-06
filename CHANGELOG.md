@@ -1,3 +1,9 @@
+## [0.0.4+1]
+
+### Updated
+Added logic to update TreeNode when expanded programmatically
+Fixed issue with adding new node to a TreeNode with new children
+
 ## [0.0.3+7]
 
 ### Added

@@ -82,6 +82,8 @@ TreeView(
   theme: treeViewTheme
 ),
 ```
+_The TreeView requires that the onExpansionChange property updates the expanded
+node so that the tree is rendered properly.
 
 ### Creating a theme
 ```dart
