@@ -1,3 +1,12 @@
+## [0.2.0+1]
+
+### Updated
+* Added animation controller dispose to TreeNode to prevent memory leaks
+
+### Added
+* Added new dense property to TreeViewTheme
+* Added new loadJSON and loadMap convenience methods to TreeViewController for data loading
+
 ## [0.1.0+2]
 
 ### Updated

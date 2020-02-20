@@ -78,9 +78,78 @@ class TreeViewController {
         list.map((Map<String, dynamic> item) => Node.fromMap(item)).toList();
     return TreeViewController(
       children: treeData,
-      selectedKey: selectedKey ?? this.selectedKey,
+      selectedKey: this.selectedKey,
     );
   }
+
+  /// Adds a new node to an existing node identified by specified key.
+  /// It returns a new controller with the new node added. This method
+  /// expects the user to properly place this call so that the state is
+  /// updated.
+  ///
+  /// See [TreeViewController.addNode] for info on optional parameters.
+  ///
+  /// ```dart
+  /// setState((){
+  ///   controller = controller.withAddNode(key, newNode);
+  /// });
+  /// ```
+  TreeViewController withAddNode(
+    String key,
+    Node newNode, {
+    Node parent,
+    InsertMode mode: InsertMode.append,
+    int index,
+  }) {
+    List<Node> _data =
+        addNode(key, newNode, parent: parent, mode: mode, index: index);
+    return TreeViewController(
+      children: _data,
+      selectedKey: this.selectedKey,
+    );
+  }
+
+  /// Replaces an existing node identified by specified key with a new node.
+  /// It returns a new controller with the updated node replaced. This method
+  /// expects the user to properly place this call so that the state is
+  /// updated.
+  ///
+  /// See [TreeViewController.updateNode] for info on optional parameters.
+  ///
+  /// ```dart
+  /// setState((){
+  ///   controller = controller.withUpdateNode(key, newNode);
+  /// });
+  /// ```
+  TreeViewController withUpdateNode(String key, Node newNode, {Node parent}) {
+    List<Node> _data = updateNode(key, newNode, parent: parent);
+    return TreeViewController(
+      children: _data,
+      selectedKey: this.selectedKey,
+    );
+  }
+
+  /// Removes an existing node identified by specified key.
+  /// It returns a new controller with the node removed. This method
+  /// expects the user to properly place this call so that the state is
+  /// updated.
+  ///
+  /// See [TreeViewController.deleteNode] for info on optional parameters.
+  ///
+  /// ```dart
+  /// setState((){
+  ///   controller = controller.withDeleteNode(key);
+  /// });
+  /// ```
+  TreeViewController withDeleteNode(String key, {Node parent}) {
+    List<Node> _data = deleteNode(key, parent: parent);
+    return TreeViewController(
+      children: _data,
+      selectedKey: this.selectedKey,
+    );
+  }
+
+  /// TODO: add a toggleNode method that toggle a node based on a key and returns a new controller with that node toggled.
 
   /// Gets the node that has a key value equal to the specified key.
   Node getNode(String key, {Node parent}) {
@@ -126,7 +195,7 @@ class TreeViewController {
     return _found;
   }
 
-  /// Adds a new node to a node identified by specified key. It optionally
+  /// Adds a new node to an existing node identified by specified key. It optionally
   /// accepts an [InsertMode] and index. If no [InsertMode] is specified,
   /// it appends the new node as a child at the end. This method returns
   /// a new list with the added node.
