@@ -15,6 +15,13 @@ class TreeViewTheme {
   /// The horizontal padding for the children of a [TreeNode] parent.
   final double levelPadding;
 
+  /// Whether the [TreeNode] is vertically dense.
+  ///
+  /// If this property is null then its value is based on [ListTileTheme.dense].
+  ///
+  /// A dense [TreeNode] defaults to a smaller height.
+  final bool dense;
+
   /// The default appearance theme for [TreeNode] icons.
   final IconThemeData iconTheme;
 
@@ -34,6 +41,7 @@ class TreeViewTheme {
     this.labelStyle: const TextStyle(),
     this.parentLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
     this.levelPadding: _kDefaultLevelPadding,
+    this.dense: true,
   });
 
   /// Creates a [TreeView] theme with some reasonable default values.
@@ -50,6 +58,7 @@ class TreeViewTheme {
         expanderTheme = const ExpanderThemeData.fallback(),
         labelStyle = const TextStyle(),
         parentLabelStyle = const TextStyle(fontWeight: FontWeight.bold),
+        dense = true,
         levelPadding = _kDefaultLevelPadding;
 
   /// Creates a copy of this theme but with the given fields replaced with
@@ -60,6 +69,7 @@ class TreeViewTheme {
     ExpanderThemeData expanderTheme,
     TextStyle labelStyle,
     TextStyle parentLabelStyle,
+    bool dense,
     double levelPadding,
   }) {
     return TreeViewTheme(
@@ -68,6 +78,7 @@ class TreeViewTheme {
       iconTheme: iconTheme ?? this.iconTheme,
       expanderTheme: expanderTheme ?? this.expanderTheme,
       labelStyle: labelStyle ?? this.labelStyle,
+      dense: dense ?? this.dense,
       parentLabelStyle: parentLabelStyle ?? this.parentLabelStyle,
     );
   }
@@ -83,6 +94,7 @@ class TreeViewTheme {
       iconTheme: other.iconTheme,
       expanderTheme: other.expanderTheme,
       labelStyle: other.labelStyle,
+      dense: other.dense,
       parentLabelStyle: other.parentLabelStyle,
     );
   }
@@ -97,6 +109,7 @@ class TreeViewTheme {
       iconTheme,
       expanderTheme,
       labelStyle,
+      dense,
       parentLabelStyle,
     );
   }
@@ -111,6 +124,7 @@ class TreeViewTheme {
         other.iconTheme == iconTheme &&
         other.expanderTheme == expanderTheme &&
         other.labelStyle == labelStyle &&
+        other.dense == dense &&
         other.parentLabelStyle == parentLabelStyle;
   }
 }

@@ -56,10 +56,9 @@ class _TreeNodeState extends State<TreeNode>
     super.dispose();
   }
 
-
   @override
   void didUpdateWidget(TreeNode oldWidget) {
-    if(widget.node.expanded != oldWidget.node.expanded){
+    if (widget.node.expanded != oldWidget.node.expanded) {
       setState(() {
         _isExpanded = widget.node.expanded;
         if (_isExpanded) {
@@ -71,9 +70,10 @@ class _TreeNodeState extends State<TreeNode>
           });
         }
       });
-    } else if(widget.node != oldWidget.node){
+    } else if (widget.node != oldWidget.node) {
       setState(() {});
     }
+    super.didUpdateWidget(oldWidget);
   }
 
   void _handleExpand() {
@@ -155,7 +155,7 @@ class _TreeNodeState extends State<TreeNode>
     final icon = _buildNodeIcon();
     return Container(
       padding: EdgeInsets.symmetric(
-        vertical: 10,
+        vertical: _theme.dense ? 10 : 15,
         horizontal: 0,
       ),
       color: isSelected
@@ -263,7 +263,8 @@ class _TreeNodeState extends State<TreeNode>
   Widget build(BuildContext context) {
     TreeView _treeView = TreeView.of(context);
     assert(_treeView != null, 'TreeView must exist in context');
-    final bool closed = (!_isExpanded || !widget.node.expanded) && _controller.isDismissed;
+    final bool closed =
+        (!_isExpanded || !widget.node.expanded) && _controller.isDismissed;
     final nodeLabel = _buildNodeTitle();
     return widget.node.isParent
         ? AnimatedBuilder(
@@ -338,6 +339,12 @@ class _TreeNodeExpanderState extends State<_TreeNodeExpander>
       animation = Tween<double>(begin: 0, end: 0).animate(controller);
     }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override

@@ -644,6 +644,7 @@ class Utilities {
     } else {
       return Color.fromARGB(255, 0, 0, 0);
     }
+    return Color.fromARGB(255, 0, 0, 0);
   }
 
   static String toRGBA(Color color) {

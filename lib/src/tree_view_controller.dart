@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:convert' show jsonDecode, jsonEncode;
 
 import 'models/node.dart';
 
@@ -47,6 +47,37 @@ class TreeViewController {
   TreeViewController copyWith({List<Node> children, String selectedKey}) {
     return TreeViewController(
       children: children ?? this.children,
+      selectedKey: selectedKey ?? this.selectedKey,
+    );
+  }
+
+  /// Loads this controller with data from a JSON String
+  /// This method expects the user to properly update the state
+  ///
+  /// ```dart
+  /// setState((){
+  ///   controller = controller.loadJSON(json: jsonString);
+  /// });
+  /// ```
+  TreeViewController loadJSON({String json: '[]'}) {
+    List jsonList = jsonDecode(json);
+    List<Map<String, dynamic>> list = List<Map<String, dynamic>>.from(jsonList);
+    return loadMap(list: list);
+  }
+
+  /// Loads this controller with data from a Map.
+  /// This method expects the user to properly update the state
+  ///
+  /// ```dart
+  /// setState((){
+  ///   controller = controller.loadMap(map: dataMap);
+  /// });
+  /// ```
+  TreeViewController loadMap({List<Map<String, dynamic>> list: const []}) {
+    List<Node> treeData =
+        list.map((Map<String, dynamic> item) => Node.fromMap(item)).toList();
+    return TreeViewController(
+      children: treeData,
       selectedKey: selectedKey ?? this.selectedKey,
     );
   }
@@ -182,6 +213,6 @@ class TreeViewController {
 
   @override
   String toString() {
-    return JsonEncoder().convert(asMap);
+    return jsonEncode(asMap);
   }
 }
