@@ -149,7 +149,25 @@ class TreeViewController {
     );
   }
 
-  /// TODO: add a toggleNode method that toggle a node based on a key and returns a new controller with that node toggled.
+  /// Toggles the expanded property of an existing node identified by
+  /// specified key. It returns a new controller with the node toggled.
+  /// This method expects the user to properly place this call so
+  /// that the state is updated.
+  ///
+  /// See [TreeViewController.toggleNode] for info on optional parameters.
+  ///
+  /// ```dart
+  /// setState((){
+  ///   controller = controller.withToggleNode(key, newNode);
+  /// });
+  /// ```
+  TreeViewController withToggleNode(String key, {Node parent}) {
+    List<Node> _data = toggleNode(key, parent: parent);
+    return TreeViewController(
+      children: _data,
+      selectedKey: this.selectedKey,
+    );
+  }
 
   /// Gets the node that has a key value equal to the specified key.
   Node getNode(String key, {Node parent}) {
@@ -254,6 +272,13 @@ class TreeViewController {
     }).toList();
   }
 
+  /// Toggles an existing node identified by specified key. This method
+  /// returns a new list with the specified node toggled.
+  List<Node> toggleNode(String key, {Node parent}) {
+    Node _node = getNode(key, parent: parent);
+    return updateNode(key, _node.copyWith(expanded: !_node.expanded));
+  }
+
   /// Deletes an existing node identified by specified key. This method
   /// returns a new list with the specified node removed.
   List<Node> deleteNode(String key, {Node parent}) {
@@ -273,6 +298,13 @@ class TreeViewController {
       }
     }
     return _filteredChildren;
+  }
+
+  /// Get the current selected node. Returns null if there is no selectedKey
+  Node get selectedNode {
+    return this.selectedKey == null || this.selectedKey.isEmpty
+        ? null
+        : getNode(this.selectedKey);
   }
 
   /// Map representation of this object
