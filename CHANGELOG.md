@@ -6,6 +6,7 @@
 ### Added
 * Added new dense property to TreeViewTheme
 * Added new loadJSON and loadMap convenience methods to TreeViewController for data loading
+* Added new convenience methods to TreeViewController: toggleNode, withToggleNode, selectedNode
 
 ## [0.1.0+2]
 
