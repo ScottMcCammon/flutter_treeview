@@ -3,6 +3,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_treeview/src/models/node.dart';
 import 'package:flutter_treeview/src/models/node_icon.dart';
 
+class Person {
+  final int age;
+
+  Person({this.age});
+}
+
+class Animal {
+  final int legs;
+
+  Animal({this.legs});
+}
+
 void main() {
   group('instantiate', () {
     test('from string', () {
@@ -46,7 +58,7 @@ void main() {
       expect(node.isParent, false);
       expect(node.asMap, expectedMap);
     });
-    test('from map', () {
+    test('from nested map', () {
       final map = {
         "label": "Home",
         "expanded": 1,
@@ -99,6 +111,25 @@ void main() {
       Map nodeMap = node.asMap;
       nodeMap.remove('key');
       expect(nodeMap, expectedMap);
+    });
+    test('with data', () {
+      Person lukas = Person(age: 3);
+      Animal otis = Animal(legs: 4);
+      final Node node1 =
+          Node<Person>(label: 'Lukas', key: 'lukas', data: lukas);
+      Node node2 = Node.fromLabel('Friend');
+      expect(node1.hasData, true);
+      expect(node1.data.runtimeType, Person);
+
+      expect(node2.hasData, false);
+      expect(node2.data.runtimeType, Null);
+      node2 = node2.copyWith(data: otis);
+      expect(node2.data.runtimeType, Animal);
+      expect(node2.hasData, true);
+      final Node node3 =
+          Node<double>(label: 'Building Height', key: 'bldghgt', data: 100.4);
+      expect(node3.hasData, true);
+      expect(node3.data.runtimeType, double);
     });
   });
 }

@@ -1,3 +1,8 @@
+## [0.3.0+1]
+
+### Added
+* Added generic data property to Node class to support the use of custom data
+
 ## [0.2.0+1]
 
 ### Updated

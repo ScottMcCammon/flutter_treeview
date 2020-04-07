@@ -110,7 +110,57 @@ TreeViewTheme _treeViewTheme = TreeViewTheme(
     color: Colors.grey.shade800,
   ),
   colorScheme: ColorScheme.light(),
-);
+)
+```
+
+### Using custom data
+The Node class supports the use of custom data. You can use the data property on the Node instance to store data that you want to easily retrieve.
+```dart
+class Person {
+  final String name;
+  final List<Animal> pets;
+
+  Person({this.name, this.pets});
+}
+
+class Animal {
+  final String name;
+
+  Animal({this.name});
+}
+
+Animal otis = Animal(name: 'Otis');
+Animal zorro = Animal(name: 'Zorro');
+Person lukas = Person(name: 'Lukas', pets: [otis, zorro]);
+
+List<Node> nodes = [
+  Node<Person>(
+    label: 'Lukas',
+    key: 'lukas',
+    data: lukas,
+    children: [
+      Node<Animal>(
+        label: 'Otis',
+        key: 'otis',
+        data: otis,
+      ),      
+      //<T> is optional but recommended
+      Node(
+        label: 'Zorro',
+        key: 'zorro',
+        data: zorro,
+      ),
+    ]
+  ),
+];
+TreeViewController _treeViewController = TreeViewController(children: nodes);
+TreeView(
+  controller: _treeViewController,
+  onNodeTap: (key) {
+    Node selectedNode = _treeViewController.getNode(key);
+    Person selectedModel = selectedNode.data;
+  },
+),
 ```
 
 

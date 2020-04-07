@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_treeview/src/tree_node.dart';
 import 'package:flutter_treeview/src/utilities.dart';
@@ -15,7 +16,7 @@ import 'node_icon.dart';
 /// a node on the [TreeView] widget. The key and label properties are
 /// required. The key is needed for events that occur on the generated
 /// [TreeNode]. It should always be unique.
-class Node {
+class Node<T> {
   /// The unique string that identifies this object.
   final String key;
 
@@ -29,6 +30,10 @@ class Node {
   /// node is a parent
   final bool expanded;
 
+  /// Generic data model that can be assigned to the [TreeNode]. This makes
+  /// it useful to assign and retrieve data associated with the [TreeNode]
+  final T data;
+
   /// The sub [Node]s of this object.
   final List<Node> children;
 
@@ -38,6 +43,7 @@ class Node {
     this.children: const [],
     this.expanded: false,
     this.icon,
+    this.data,
   })  : assert(key != null),
         assert(label != null);
 
@@ -74,7 +80,7 @@ class Node {
           .toList();
     }
     return Node(
-      key: '${_key}_$_label',
+      key: '$_key',
       label: _label,
       icon: _icon,
       expanded: Utilities.truthful(map['expanded']),
@@ -90,6 +96,7 @@ class Node {
     List<Node> children,
     bool expanded,
     NodeIcon icon,
+    T data,
   }) =>
       Node(
         key: key ?? this.key,
@@ -97,6 +104,7 @@ class Node {
         icon: icon ?? this.icon,
         expanded: expanded ?? this.expanded,
         children: children ?? this.children,
+        data: data ?? this.data,
       );
 
   /// Whether this object has children [Node].
@@ -105,14 +113,21 @@ class Node {
   /// Whether this object has a non-null icon.
   bool get hasIcon => icon != null && icon.icon != null;
 
+  /// Whether this object has data associated with it.
+  bool get hasData => data != null;
+
   /// Map representation of this object
-  Map<String, dynamic> get asMap => {
-        "key": key,
-        "label": label,
-        "icon": icon == null ? null : icon.asMap,
-        "expanded": expanded,
-        "children": children.map((Node child) => child.asMap).toList(),
-      };
+  Map<String, dynamic> get asMap {
+    Map<String, dynamic> _map = {
+      "key": key,
+      "label": label,
+      "icon": icon == null ? null : icon.asMap,
+      "expanded": expanded,
+      "children": children.map((Node child) => child.asMap).toList(),
+    };
+    //TODO: figure out a means to check for getter or method on generic to include map from generic
+    return _map;
+  }
 
   @override
   String toString() {
@@ -139,6 +154,7 @@ class Node {
         other.label == label &&
         other.icon == icon &&
         other.expanded == expanded &&
+        other.data.runtimeType == T &&
         other.children.length == children.length;
   }
 }

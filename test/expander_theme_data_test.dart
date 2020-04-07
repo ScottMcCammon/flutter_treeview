@@ -45,6 +45,7 @@ void main() {
     ExpanderThemeData theme = ExpanderThemeData.fallback();
     ExpanderThemeData theme2 = ExpanderThemeData();
     expect(theme.isConcrete, true);
-    expect(theme2.isConcrete, false);
+    expect(theme2.isConcrete, true);
+    expect(theme, theme2);
   });
 }
