@@ -1,3 +1,11 @@
+## [0.4.0+1]
+
+### Added
+* Added expandToNode method to TreeViewController to support expanding all nodes down to specified node. Returns List<Node>.
+* Added collapseToNode method to TreeViewController to support collapsing all nodes down to specified node. Returns List<Node>.
+* Added withExpandToNode method to TreeViewController to support expanding all nodes down to specified node. Returns TreeViewController.
+* Added withCollapseToNode method to TreeViewController to support expanding all nodes down to specified node. Returns TreeViewController.
+
 ## [0.3.0+1]
 
 ### Added

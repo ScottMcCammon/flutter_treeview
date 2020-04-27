@@ -75,7 +75,7 @@ class TreeViewController {
   /// ```
   TreeViewController loadMap({List<Map<String, dynamic>> list: const []}) {
     List<Node> treeData =
-        list.map((Map<String, dynamic> item) => Node.fromMap(item)).toList();
+    list.map((Map<String, dynamic> item) => Node.fromMap(item)).toList();
     return TreeViewController(
       children: treeData,
       selectedKey: this.selectedKey,
@@ -94,15 +94,14 @@ class TreeViewController {
   ///   controller = controller.withAddNode(key, newNode);
   /// });
   /// ```
-  TreeViewController withAddNode(
-    String key,
-    Node newNode, {
-    Node parent,
-    InsertMode mode: InsertMode.append,
-    int index,
-  }) {
+  TreeViewController withAddNode(String key,
+      Node newNode, {
+        Node parent,
+        InsertMode mode: InsertMode.append,
+        int index,
+      }) {
     List<Node> _data =
-        addNode(key, newNode, parent: parent, mode: mode, index: index);
+    addNode(key, newNode, parent: parent, mode: mode, index: index);
     return TreeViewController(
       children: _data,
       selectedKey: this.selectedKey,
@@ -169,6 +168,46 @@ class TreeViewController {
     );
   }
 
+  /// Expands all nodes down to Node identified by specified key.
+  /// It returns a new controller with the nodes expanded.
+  /// This method expects the user to properly place this call so
+  /// that the state is updated.
+  ///
+  /// Internally uses [TreeViewController.expandToNode].
+  ///
+  /// ```dart
+  /// setState((){
+  ///   controller = controller.withExpandToNode(key, newNode);
+  /// });
+  /// ```
+  TreeViewController withExpandToNode(String key, {Node parent}) {
+    List<Node> _data = expandToNode(key);
+    return TreeViewController(
+      children: _data,
+      selectedKey: this.selectedKey,
+    );
+  }
+
+  /// Collapses all nodes down to Node identified by specified key.
+  /// It returns a new controller with the nodes collapsed.
+  /// This method expects the user to properly place this call so
+  /// that the state is updated.
+  ///
+  /// Internally uses [TreeViewController.collapseToNode].
+  ///
+  /// ```dart
+  /// setState((){
+  ///   controller = controller.withCollapseToNode(key, newNode);
+  /// });
+  /// ```
+  TreeViewController withCollapseToNode(String key, {Node parent}) {
+    List<Node> _data = collapseToNode(key);
+    return TreeViewController(
+      children: _data,
+      selectedKey: this.selectedKey,
+    );
+  }
+
   /// Gets the node that has a key value equal to the specified key.
   Node getNode(String key, {Node parent}) {
     Node _found;
@@ -213,17 +252,62 @@ class TreeViewController {
     return _found;
   }
 
+  /// Expands a node and all of the node's ancestors so that the node is
+  /// visible without the need to manually expand each node.
+  List<Node> expandToNode(String key) {
+    List<String> _ancestors = [];
+    String _currentKey = key;
+
+    _ancestors.add(_currentKey);
+
+    Node _parent = this.getParent(_currentKey);
+    while (_parent.key != _currentKey) {
+      _currentKey = _parent.key;
+      _ancestors.add(_currentKey);
+      _parent = this.getParent(_currentKey);
+    }
+    TreeViewController _this = this;
+    _ancestors.forEach((String k) {
+      Node _node = _this.getNode(k);
+      Node _updated = _node.copyWith(expanded: true);
+      _this = _this.withUpdateNode(k, _updated);
+    });
+    return _this.children;
+  }
+
+  /// Collapses a node and all of the node's ancestors without the need to
+  /// manually collapse each node.
+  List<Node> collapseToNode(String key) {
+    List<String> _ancestors = [];
+    String _currentKey = key;
+
+    _ancestors.add(_currentKey);
+
+    Node _parent = this.getParent(_currentKey);
+    while (_parent.key != _currentKey) {
+      _currentKey = _parent.key;
+      _ancestors.add(_currentKey);
+      _parent = this.getParent(_currentKey);
+    }
+    TreeViewController _this = this;
+    _ancestors.forEach((String k) {
+      Node _node = _this.getNode(k);
+      Node _updated = _node.copyWith(expanded: false);
+      _this = _this.withUpdateNode(k, _updated);
+    });
+    return _this.children;
+  }
+
   /// Adds a new node to an existing node identified by specified key. It optionally
   /// accepts an [InsertMode] and index. If no [InsertMode] is specified,
   /// it appends the new node as a child at the end. This method returns
   /// a new list with the added node.
-  List<Node> addNode(
-    String key,
-    Node newNode, {
-    Node parent,
-    InsertMode mode: InsertMode.append,
-    int index,
-  }) {
+  List<Node> addNode(String key,
+      Node newNode, {
+        Node parent,
+        InsertMode mode: InsertMode.append,
+        int index,
+      }) {
     List<Node> _children = parent == null ? this.children : parent.children;
     return _children.map((Node child) {
       if (child.key == key) {
