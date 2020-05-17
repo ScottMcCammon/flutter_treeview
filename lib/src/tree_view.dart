@@ -67,11 +67,12 @@ class TreeView extends InheritedWidget {
     this.allowParentSelect: false,
     this.supportParentDoubleTap: false,
     TreeViewTheme theme,
-  })  : this.theme = theme ?? const TreeViewTheme(),
+  })
+      : this.theme = theme ?? const TreeViewTheme(),
         super(
-          key: key,
-          child: _TreeViewData(controller),
-        );
+        key: key,
+        child: _TreeViewData(controller),
+      );
 
   static TreeView of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType(aspect: TreeView);
@@ -94,9 +95,10 @@ class _TreeViewData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData _parentTheme = Theme.of(context);
     return Theme(
-      data: ThemeData(
-        hoverColor: Colors.grey.shade100,
+      data: _parentTheme.copyWith(
+          hoverColor: Colors.grey.shade100
       ),
       child: ListView(
         padding: EdgeInsets.zero,

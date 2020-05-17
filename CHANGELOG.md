@@ -1,3 +1,8 @@
+## [0.4.1+1]
+
+### Updated
+* Updated TreeView widget so that it inherits the ThemeData from context
+
 ## [0.4.0+1]
 
 ### Added
