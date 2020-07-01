@@ -82,6 +82,7 @@ void main() {
           "codePoint": Icons.home.codePoint,
           "color": null,
           "fontFamily": "MaterialIcons",
+          "fontPackage": null,
         },
         "expanded": true,
         "children": [

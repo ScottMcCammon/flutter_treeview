@@ -1,7 +1,7 @@
 ## [0.4.2+1]
 
 ### Added
-* 
+* Added support for using external font packages
 
 ## [0.4.1+1]
 

@@ -20,6 +20,9 @@ class NodeIcon {
   /// The font family of used for this icon.
   final String fontFamily;
 
+  /// The name of the package from which the font family is included.
+  final String fontPackage;
+
   /// The color of the icon. This value overrides the default value
   /// in the [TreeViewTheme]
   final String color;
@@ -27,6 +30,7 @@ class NodeIcon {
   NodeIcon({
     this.codePoint,
     this.fontFamily: 'MaterialIcons',
+    this.fontPackage,
     this.color,
   }) : assert(codePoint != null);
 
@@ -49,9 +53,9 @@ class NodeIcon {
   /// with an appropriate [codePoint] value and other defaults.
   factory NodeIcon.fromIconData(IconData icon) {
     return NodeIcon(
-      codePoint: icon.codePoint,
-      fontFamily: icon.fontFamily,
-    );
+        codePoint: icon.codePoint,
+        fontFamily: icon.fontFamily,
+        fontPackage: icon.fontPackage);
   }
 
   /// Creates a [NodeIcon] from a Map<String, dynamic> map. The map
@@ -59,11 +63,15 @@ class NodeIcon {
   /// missing or invalid, it returns null.
   factory NodeIcon.fromMap(Map<String, dynamic> map) {
     if (map['codePoint'] != null) {
-      IconData _icon = IconData(map['codePoint'],
-          fontFamily: map['fontFamily'] ?? 'MaterialIcons');
+      IconData _icon = IconData(
+        map['codePoint'],
+        fontFamily: map['fontFamily'] ?? 'MaterialIcons',
+        fontPackage: map['fontPackage'],
+      );
       return NodeIcon(
         codePoint: _icon.codePoint,
         fontFamily: _icon.fontFamily,
+        fontPackage: _icon.fontPackage,
         color: map['color'],
       );
     }
@@ -71,7 +79,11 @@ class NodeIcon {
   }
 
   /// Getter to return the [IconData] icon
-  IconData get icon => IconData(codePoint, fontFamily: fontFamily);
+  IconData get icon => IconData(
+        codePoint,
+        fontFamily: fontFamily,
+        fontPackage: fontPackage,
+      );
 
   /// Getter to return the icon color
   Color get iconColor => color == null ? null : Utilities.getColor(color);
@@ -80,6 +92,7 @@ class NodeIcon {
   Map<String, dynamic> get asMap => {
         "codePoint": codePoint,
         "fontFamily": fontFamily,
+        "fontPackage": fontPackage,
         "color": color,
       };
 

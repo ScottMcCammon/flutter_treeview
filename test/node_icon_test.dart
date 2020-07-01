@@ -24,6 +24,7 @@ void main() {
         "codePoint": Icons.help.codePoint,
         "color": "#990000",
         "fontFamily": "MaterialIcons",
+        "fontPackage": null,
       };
       final NodeIcon icon = NodeIcon.fromMap(map);
       expect(icon.codePoint, Icons.help.codePoint);
