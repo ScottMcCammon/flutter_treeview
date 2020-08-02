@@ -1,3 +1,8 @@
+## [0.5.0+1]
+
+### Added
+* Added support for using shrinkWrap, primary, and physics property on TreeView 
+
 ## [0.4.2+1]
 
 ### Added

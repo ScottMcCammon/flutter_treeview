@@ -75,7 +75,7 @@ class TreeViewController {
   /// ```
   TreeViewController loadMap({List<Map<String, dynamic>> list: const []}) {
     List<Node> treeData =
-    list.map((Map<String, dynamic> item) => Node.fromMap(item)).toList();
+        list.map((Map<String, dynamic> item) => Node.fromMap(item)).toList();
     return TreeViewController(
       children: treeData,
       selectedKey: this.selectedKey,
@@ -94,14 +94,15 @@ class TreeViewController {
   ///   controller = controller.withAddNode(key, newNode);
   /// });
   /// ```
-  TreeViewController withAddNode(String key,
-      Node newNode, {
-        Node parent,
-        InsertMode mode: InsertMode.append,
-        int index,
-      }) {
+  TreeViewController withAddNode(
+    String key,
+    Node newNode, {
+    Node parent,
+    InsertMode mode: InsertMode.append,
+    int index,
+  }) {
     List<Node> _data =
-    addNode(key, newNode, parent: parent, mode: mode, index: index);
+        addNode(key, newNode, parent: parent, mode: mode, index: index);
     return TreeViewController(
       children: _data,
       selectedKey: this.selectedKey,
@@ -302,12 +303,13 @@ class TreeViewController {
   /// accepts an [InsertMode] and index. If no [InsertMode] is specified,
   /// it appends the new node as a child at the end. This method returns
   /// a new list with the added node.
-  List<Node> addNode(String key,
-      Node newNode, {
-        Node parent,
-        InsertMode mode: InsertMode.append,
-        int index,
-      }) {
+  List<Node> addNode(
+    String key,
+    Node newNode, {
+    Node parent,
+    InsertMode mode: InsertMode.append,
+    int index,
+  }) {
     List<Node> _children = parent == null ? this.children : parent.children;
     return _children.map((Node child) {
       if (child.key == key) {

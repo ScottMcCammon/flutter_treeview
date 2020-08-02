@@ -48,6 +48,21 @@ class TreeView extends InheritedWidget {
   /// collapse the node.
   final bool allowParentSelect;
 
+  /// How the [TreeView] should respond to user input.
+  final ScrollPhysics physics;
+
+  /// Whether the extent of the [TreeView] should be determined by the contents
+  /// being viewed.
+  ///
+  /// Defaults to false.
+  final bool shrinkWrap;
+
+  /// Whether the [TreeView] is the primary scroll widget associated with the
+  /// parent PrimaryScrollController..
+  ///
+  /// Defaults to true.
+  final bool primary;
+
   /// Determines whether the parent node can receive a double tap. This is
   /// useful if [allowParentSelect] is true. This allows the user to double tap
   /// the parent node to expand or collapse the parent when [allowParentSelect]
@@ -63,16 +78,23 @@ class TreeView extends InheritedWidget {
     @required this.controller,
     this.onNodeTap,
     this.onNodeDoubleTap,
+    this.physics,
     this.onExpansionChanged,
     this.allowParentSelect: false,
     this.supportParentDoubleTap: false,
+    this.shrinkWrap: false,
+    this.primary: true,
     TreeViewTheme theme,
-  })
-      : this.theme = theme ?? const TreeViewTheme(),
+  })  : this.theme = theme ?? const TreeViewTheme(),
         super(
-        key: key,
-        child: _TreeViewData(controller),
-      );
+          key: key,
+          child: _TreeViewData(
+            controller,
+            shrinkWrap: shrinkWrap,
+            primary: primary,
+            physics: physics,
+          ),
+        );
 
   static TreeView of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType(aspect: TreeView);
@@ -90,17 +112,22 @@ class TreeView extends InheritedWidget {
 
 class _TreeViewData extends StatelessWidget {
   final TreeViewController _controller;
+  final bool shrinkWrap;
+  final bool primary;
+  final ScrollPhysics physics;
 
-  const _TreeViewData(this._controller);
+  const _TreeViewData(this._controller,
+      {this.shrinkWrap, this.primary, this.physics});
 
   @override
   Widget build(BuildContext context) {
     ThemeData _parentTheme = Theme.of(context);
     return Theme(
-      data: _parentTheme.copyWith(
-          hoverColor: Colors.grey.shade100
-      ),
+      data: _parentTheme.copyWith(hoverColor: Colors.grey.shade100),
       child: ListView(
+        shrinkWrap: shrinkWrap,
+        primary: primary,
+        physics: physics,
         padding: EdgeInsets.zero,
         children: _controller.children.map((Node node) {
           return TreeNode(node: node);
