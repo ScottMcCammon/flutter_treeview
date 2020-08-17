@@ -1,3 +1,8 @@
+## [0.6.0+1]
+
+### Added
+* Added support for importing data property during JSON and Map load
+
 ## [0.5.0+1]
 
 ### Added

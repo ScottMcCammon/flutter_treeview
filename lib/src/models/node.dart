@@ -65,6 +65,7 @@ class Node<T> {
   factory Node.fromMap(Map<String, dynamic> map) {
     String _key = map['key'];
     String _label = map['label'];
+    var _data = map['data'];
     NodeIcon _icon;
     List<Node> _children = [];
     if (_key == null) {
@@ -83,6 +84,7 @@ class Node<T> {
       key: '$_key',
       label: _label,
       icon: _icon,
+      data: _data,
       expanded: Utilities.truthful(map['expanded']),
       children: _children,
     );
